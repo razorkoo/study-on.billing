@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\BillingUser;
 use App\Repository\BillingUserRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use PHPUnit\Runner\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -20,13 +21,7 @@ use Swagger\Annotations as SWG;
 */
 class ApiController extends AbstractController
 {
-    public function index()
-    {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/ApiController.php',
-        ]);
-    }
+
     /**
      * @Route("/api/v1/login", name="login", methods={"POST"} )
      *     @SWG\Post(

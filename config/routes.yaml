@@ -5,12 +5,12 @@ app.swagger_ui:
 
 login_check:
   path: /api/v1/login
-index:
-  path: /
-  controller: App\Controller\ApiController:index
+  methods: POST
+
 
 register:
   path: /api/v1/register
   controller: App\Controller\ApiController:register
+  methods: POST
 
 

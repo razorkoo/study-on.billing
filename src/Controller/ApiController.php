@@ -16,9 +16,7 @@ use JMS\Serializer\SerializerBuilder;
 use App\DTO\BillingUserFromModel;
 use Swagger\Annotations as SWG;
 
-/**
-* @Route("/api")
-*/
+
 class ApiController extends AbstractController
 {
 

@@ -96,7 +96,7 @@ class ApiControllerTest extends AbstractTest
             json_encode(['username'=>'testUser2@test.com','password'=>'password']));
         $this->assertSame(200,$client->getResponse()->getStatusCode());
         $this->assertContains('"token"',$client->getResponse()->getContent());
-        $this->assertContains('ROLE_SUPER_ADMIN',$client->getResponse()->getContent());
+
     }
     public function testWrongLoginOrPassword()
     {

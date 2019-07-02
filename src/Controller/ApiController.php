@@ -131,7 +131,7 @@ class ApiController extends AbstractController
      *          description="Register successful",
      *          @SWG\Schema(
      *              @SWG\Property(
-     *                  property="token",
+     *                  property="userToken",
      *                  type="string"
      *              ),
      *              @SWG\Property(

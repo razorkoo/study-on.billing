@@ -41,9 +41,11 @@ class BillingUser implements UserInterface
     private $balance;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="billingUser", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="bUser")
      */
     private $transactions;
+
+
 
     public function __construct()
     {
@@ -152,7 +154,7 @@ class BillingUser implements UserInterface
     {
         if (!$this->transactions->contains($transaction)) {
             $this->transactions[] = $transaction;
-            $transaction->setBillingUser($this);
+            $transaction->setBUser($this);
         }
 
         return $this;
@@ -163,11 +165,12 @@ class BillingUser implements UserInterface
         if ($this->transactions->contains($transaction)) {
             $this->transactions->removeElement($transaction);
             // set the owning side to null (unless already changed)
-            if ($transaction->getBillingUser() === $this) {
-                $transaction->setBillingUser(null);
+            if ($transaction->getBUser() === $this) {
+                $transaction->setBUser(null);
             }
         }
 
         return $this;
     }
+
 }

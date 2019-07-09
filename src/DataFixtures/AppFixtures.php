@@ -24,7 +24,7 @@ class AppFixtures extends Fixture
         $this->passwordEncoder = $passwordEncoder;
     }
 
-    public function load(ObjectManager $manager)
+   /* public function load(ObjectManager $manager)
     {
         $emails = ['testUser@test.com', 'testUser2@test.com'];
         $roles = [['ROLE_USER'], ['ROLE_SUPER_ADMIN']];
@@ -37,5 +37,22 @@ class AppFixtures extends Fixture
             $manager->persist($billingUser);
         }
         $manager->flush();
-    }
+    }*/
+   public function load(ObjectManager $manager)
+   {
+       $email = "testadmin@gmail.com";
+       $roles = [['ROLE_USER'],['ROLE_SUPER_ADMIN']];
+       $password = 'aaaaaa';
+       $billingUser = new BillingUser();
+       $billingUser->setEmail($email);
+       $billingUser->setBalance(0.0);
+       for($i=0;$i<2;$i++)
+       {
+           $billingUser->setRoles($roles[$i]);
+       }
+       $billingUser->setPassword($this->passwordEncoder->encodePassword($billingUser, $password));
+       $manager->persist($billingUser);
+       $manager->flush();
+
+   }
 }

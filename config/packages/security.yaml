@@ -32,6 +32,22 @@ security:
             pattern: ^/api/v1/doc
             stateless: true
             anonymous: true
+        courses:
+            pattern: ^/api/v1/courses
+            methods: GET
+            stateless: true
+            anonymous: true
+        refresh:
+            pattern: ^/api/v1/token/refresh
+            stateless: true
+            anonymous: true
+        current:
+            pattern: ^/api/v1/users/current
+            stateless: true
+            anonymous: false
+            guard:
+              authenticators:
+                - lexik_jwt_authentication.jwt_token_authenticator
         api:
             pattern:   ^/api
             stateless: true
@@ -60,3 +76,4 @@ security:
         - { path: ^/aoi/v1/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }

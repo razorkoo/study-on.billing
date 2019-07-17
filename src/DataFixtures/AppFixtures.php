@@ -40,12 +40,12 @@ class AppFixtures extends Fixture
     }*/
    public function load(ObjectManager $manager)
    {
-       $email = "testadmin@gmail.com";
+       $email = "testadmin2@gmail.com";
        $roles = [['ROLE_USER'],['ROLE_SUPER_ADMIN']];
        $password = 'aaaaaa';
        $billingUser = new BillingUser();
        $billingUser->setEmail($email);
-       $billingUser->setBalance(0.0);
+       $billingUser->setBalance(10000.0);
        for($i=0;$i<2;$i++)
        {
            $billingUser->setRoles($roles[$i]);

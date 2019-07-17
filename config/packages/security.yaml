@@ -28,6 +28,28 @@ security:
             pattern:  ^/api/v1/register
             stateless: true
             anonymous: true
+        course_pay:
+            pattern: ^/api/v1/courses/(.+)/pay
+            stateless: true
+            anonymous: false
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+        new_course:
+            pattern:  ^/api/v1/courses/add
+            stateless: true
+            anonymous: true
+            methods: POST
+        course_update:
+            pattern: ^/api/v1/courses/(.+)
+            methods: POST
+            stateless: true
+            anonymous: true
+        course_delete:
+            pattern: ^/api/v1/courses/(.+)
+            methods: DELETE
+            stateless: true
+            anonymous: true
         doc:
             pattern: ^/api/v1/doc
             stateless: true
@@ -57,6 +79,14 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        transactions:
+            pattern: ^/api/v1/transactions
+            stateless: true
+            anonymous: false
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
         main:
             anonymous: true
 
@@ -73,7 +103,12 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
-        - { path: ^/aoi/v1/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/courses/(.+)/pay, roles:  IS_AUTHENTICATED_REMEMBERED }
+        - { path: ^/api/v1/courses/add, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/doc, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/course_delete, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/course_update, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/transactions, roles: IS_AUTHENTICATED_FULLY }

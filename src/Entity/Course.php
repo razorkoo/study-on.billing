@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Course
 {
+    const TYPE_RENT = 1;
+    const TYPE_FULL = 2;
+    const TYPE_FREE = 3;
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -19,7 +22,7 @@ class Course
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $slug;
 
@@ -113,5 +116,20 @@ class Course
         }
 
         return $this;
+    }
+    public function getTypeAsString($courseType) {
+        $type = "";
+        switch ($courseType) {
+            case 1:
+                $type='rent';
+                break;
+            case 2:
+                $type = 'full';
+                break;
+            case 3:
+                $type = 'free';
+                break;
+        }
+        return $type;
     }
 }

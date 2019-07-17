@@ -18,33 +18,27 @@ class TransactionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Transaction::class);
     }
-
-    // /**
-    //  * @return Transaction[] Returns an array of Transaction objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findWithFilters($user, $type, $skipExpired, $courseId)
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $queryBilder = $this->createQueryBuilder('t');
+        if ($user) {
+            $queryBilder->andWhere('t.bUser = :bUser')
+                ->setParameter('bUser', $user);
+        }
+        if ($type) {
+            $queryBilder->andWhere('t.type = :type')
+                ->setParameter('type', $type);
+        }
+        if ($skipExpired == 1) {
+            $date = new \DateTime();
+            $queryBilder->andWhere('t.expiredat > :date')
+                ->setParameter('date', $date);
+        }
+        if ($courseId) {
+            $queryBilder->andWhere('t.course = :courseCode')
+                ->setParameter('courseCode', $courseId);
+        }
+        return $queryBilder->getQuery()->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Transaction
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

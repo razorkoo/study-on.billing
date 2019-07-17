@@ -43,3 +43,7 @@ services:
 
     Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface:
         alias: "gesdinet.jwtrefreshtoken.refresh_token_manager"
+    App\Service\PaymentService:
+      public: true
+      arguments:
+        $entityManager: "@doctrine.orm.entity_manager"

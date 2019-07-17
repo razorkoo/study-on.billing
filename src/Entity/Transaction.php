@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Transaction
 {
+    const TYPE_DEPOSIT = 0;
+    const TYPE_PAYMENT = 1;
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -95,15 +97,21 @@ class Transaction
         return $this;
     }
 
-    public function getExpiredat(): ?\DateTimeInterface
+    public function getExpiredat(): string
     {
-        return $this->expiredat;
+
+        return $this->expiredat->format('Y-m-d H:i:s');
     }
 
-    public function setExpiredat(?\DateTimeInterface $expiredat): self
+    public function setExpiredat(\DateTime $date = null): self
     {
-        $this->expiredat = $expiredat;
-
+        if (!$date) {
+            $expirationDate = new \DateTime();
+            $expirationDate->modify($_ENV['EXP_PERIOD']);
+            $this->expiredat = $expirationDate;
+        } else {
+            $this->expiredat = $date;
+        }
         return $this;
     }
 }

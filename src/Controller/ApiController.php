@@ -229,6 +229,8 @@ class ApiController extends AbstractController
                 $manager->flush();
                 $response->setContent(json_encode(['userToken' => $JWTManager->create($user), 'roles' => $user->getRoles(), 'refresh_token' => $refreshToken->getRefreshToken()]));
                 $response->setStatusCode(Response::HTTP_CREATED);
+                $paymentService = new PaymentService($manager);
+                $paymentService->increaseBalance($user,$_ENV['INCOME']);
             } else {
                 $message = "The Same user is already exist";
                 $response->setContent(json_encode(['errors' => $message]));
@@ -366,7 +368,7 @@ class ApiController extends AbstractController
 
         foreach($allCoursesDataBase as $course) {
             $course->getSlug();
-            if ($course->getType()<3) {
+            if ($course->getType() < Course::TYPE_FREE) {
                 $allCourses[] = ['code'=>$course->getSlug(),'type'=>$types[$course->getType()-1], 'price' => $course->getPrice()];
             } else {
                 $allCourses[] = ['code'=>$course->getSlug(),'type'=>$types[$course->getType()-1]];
@@ -444,11 +446,11 @@ class ApiController extends AbstractController
      *
      *              @SWG\Property(
      *                  property="type",
-     *                  type="int"
+     *                  type="string"
      *              ),
      *              @SWG\Property(
      *                  property="price",
-     *                  type="float"
+     *                  type="number"
      *              )
      *          )
      *     ),
@@ -475,6 +477,8 @@ class ApiController extends AbstractController
      *     )
      *
      * )
+     * @IsGranted("ROLE_SUPER_ADMIN")
+     * @Security(name="Bearer")
      */
     public function addCourse(Request $request, ValidatorInterface $validator)
     {
@@ -493,8 +497,17 @@ class ApiController extends AbstractController
             } else {
                 $course = new Course();
                 $course->setSlug($courseDto->code);
-                $course->setType($courseDto->type);
-                if ($courseDto->type < 3) {
+                switch ($courseDto->type) {
+                    case 'rent':
+                        $course->setType(Course::TYPE_RENT);
+                        break;
+                    case 'full':
+                        $course->setType(Course::TYPE_FULL);
+                        break;
+                    case 'free':
+                        $course->setType(Course::TYPE_FREE);
+                }
+                if ($courseDto->type < Course::TYPE_FREE) {
                     $course->setPrice($courseDto->price);
                 }
                 $manager = $this->getDoctrine()->getManager();
@@ -543,6 +556,8 @@ class ApiController extends AbstractController
      *          )
      *     ),
      * )
+     * @IsGranted("ROLE_SUPER_ADMIN")
+     * @Security(name="Bearer")
      */
     public function deleteCourse($code, Request $request, ValidatorInterface $validator)
     {
@@ -587,7 +602,7 @@ class ApiController extends AbstractController
      *              ),
      *              @SWG\Property(
      *                  property="price",
-     *                  type="floats"
+     *                  type="number"
      *              )
      *          )
      *     ),
@@ -614,6 +629,8 @@ class ApiController extends AbstractController
      *     )
      *
      * )
+     * @IsGranted("ROLE_SUPER_ADMIN")
+     * @Security(name="Bearer")
      */
     public function editCourse($code, Request $request, ValidatorInterface $validator)
     {
@@ -636,7 +653,19 @@ class ApiController extends AbstractController
             if($course) {
                 $course->setSlug($courseDto->code);
                 $course->setPrice($courseDto->price);
-                $course->setType($courseDto->type);
+                switch ($courseDto->type) {
+                    case 'rent':
+                        $course->setType(Course::TYPE_RENT);
+                        break;
+                    case 'full':
+                        $course->setType(Course::TYPE_FULL);
+                        break;
+                    case 'free':
+                        $course->setType(Course::TYPE_FREE);
+                }
+                if ($courseDto->type < Course::TYPE_FREE) {
+                    $course->setPrice($courseDto->price);
+                }
                 $manager->persist($course);
                 $manager->flush();
                 $response->setContent(json_encode(['success'=>true]));
@@ -650,8 +679,51 @@ class ApiController extends AbstractController
         return $response;
     }
     /**
-     * @Route("/api/v1/courses/{code}/pay", name="course_pay", methods={"GET"})
-     * @Security(name="Bearer")
+     * @Route("api/v1/courses/{code}/pay", name="course_pay", methods={"GET"})
+     * @SWG\Get(
+     *     path="/api/v1/courses/{code}/pay",
+     *     summary="Оплата курса",
+     *     tags={"Оплата курса"},
+     *     produces={"application/json"},
+     *     consumes={"application/json"},
+     *     @SWG\Response(
+     *          response=200,
+     *          description="Курс успешно оплачен",
+     *          @SWG\Schema(
+     *              @SWG\Property(
+     *                  property="success",
+     *                  type="boolean"
+     *              ),
+     *              @SWG\Property(
+     *                  property="course_type",
+     *                  type="string"
+     *              ),
+     *              @SWG\Property(
+     *                  property="exrired_at",
+     *                  type="string"
+     *              )
+     *          )
+     *     ),
+     *     @SWG\Response(
+     *          response=400,
+     *          description="Недостаточно средств",
+     *          @SWG\Schema(
+     *              @SWG\Property(
+     *                  property="code",
+     *                  type="integer"
+     *              ),
+     *              @SWG\Property(
+     *                  property="message",
+     *                  type="string"
+     *              )
+     *          )
+     *     ),
+     *     @SWG\Response(
+     *         response="401",
+     *         description="Unauthorized user",
+     *     )
+     * )
+     *  @Security(name="Bearer")
      */
     public function payCourse($code, Request $request, ValidatorInterface $validator)
     {
@@ -676,10 +748,10 @@ class ApiController extends AbstractController
                 return $response;
             }
             if ($userCourse->getTypeAsString($userCourse->getType()) === 'rent') {
-                $response->setContent(json_encode(['success'=>true,'type'=>$userCourse->getTypeAsString($userCourse->getType()), 'expired_at'=>$transaction->getExpiredat()]));
+                $response->setContent(json_encode(['success'=>true, 'type'=>$userCourse->getTypeAsString($userCourse->getType()), 'expired_at'=>$transaction->getExpiredat()]));
 
             } else {
-                $response->setContent(json_encode(['success'=>true,'type'=>$userCourse->getTypeAsString($userCourse->getType())]));
+                $response->setContent(json_encode(['success'=>true, 'type'=>$userCourse->getTypeAsString($userCourse->getType())]));
             }
 
         }

@@ -4,6 +4,15 @@ nelmio_api_doc:
             title: Study-on billing
             description:
             version: 1.0.0
+        securityDefinitions:
+          Bearer:
+            type: apiKey
+            description: "Authorization: Bearer {token}"
+            name: Authorization
+            in: header
+            bearerFormat: JWT
+          security:
+            - Bearer: []
     areas: # to filter documented areas
         path_patterns:
             - ^/api/v1/login
@@ -11,3 +20,4 @@ nelmio_api_doc:
             - ^/api/v1/transactions
             - ^/api/v1/courses
             - ^/api/v1/courses/{code}
+            - ^/api/v1/users/current

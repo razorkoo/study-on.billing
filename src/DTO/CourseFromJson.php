@@ -13,9 +13,8 @@ class CourseFromJson
     public $code;
     /**
      * @Assert\NotBlank(message="Blank type")
-     * @Assert\GreaterThanOrEqual(value=1,message="Type must be greater than or equal to 1. 1-Rent course, 2 - Full course, 3 - Free course")
-     * @Assert\LessThanOrEqual(value=3,message="Type must be less than or equal to 3. 1-Rent course, 2 - Full course, 3 - Free course")
-     * @JMS\Type("int")
+     * @Assert\Choice(choices={"rent","full","free"},message="Type should be one of these types: rent,full,free")
+     * @JMS\Type("string")
      */
     public $type;
     /**

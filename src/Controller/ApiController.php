@@ -639,6 +639,7 @@ class ApiController extends AbstractController
         $errors = $validator->validate($courseDto);
         $response = new Response();
         $response->headers->set('Content-Type', 'application/json');
+
         if (count($errors)>0) {
             $allErrors  = [];
             foreach($errors as $error) {
@@ -650,6 +651,17 @@ class ApiController extends AbstractController
             $manager = $this->getDoctrine()->getManager();
             $userRepository = $manager->getRepository(Course::class);
             $course = $userRepository->findOneBy(['slug' => $code]);
+            $checkCourse = $userRepository->findOneBy(['slug' => $courseDto->code]);
+            if ($checkCourse) {
+                if (isset($course)) {
+                    if ($course->getId() != $checkCourse->getId()) {
+                        $allErrors[] = 'The same course is already exist';
+                        $response->setContent(json_encode(['errors'=>$allErrors]));
+                        $response->setStatusCode(Response::HTTP_CONFLICT);
+                        return $response;
+                    }
+                }
+            }
             if($course) {
                 $course->setSlug($courseDto->code);
                 $course->setPrice($courseDto->price);
@@ -670,6 +682,8 @@ class ApiController extends AbstractController
                 $manager->flush();
                 $response->setContent(json_encode(['success'=>true]));
                 $response->setStatusCode(Response::HTTP_CREATED);
+
+
             } else {
                 $message = "Course doesn't exist";
                 $response->setContent(json_encode(['errors' => $message]));

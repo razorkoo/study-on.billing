@@ -1,0 +1,30 @@
+{% extends 'email.html.twig' %}
+{% block body %}
+    {% if transactions %}
+        <div>
+            Отчет об оплаченных курсах
+        </div>
+        <br/>
+        <table>
+            <tr>
+                <th>Название курса</th>
+                <th>Тип курса</th>
+                <th>Число аренд/покупок</th>
+                <th>Общая сумма ($)</th>
+            </tr>
+            {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction['coursename'] }}</td>
+                    <td>{{ transaction['type'] }}</td>
+                    <td><center>{{ transaction['count'] }}</center></td>
+                    <td><center>{{ transaction['revenue'] }}</center></td>
+                </tr>
+            {% endfor %}
+        </table>
+        <left>Итого: {{ fullrevenue }}</left>
+    {% else %}
+        <div>
+            <h1> В данный период купленных курсов не обнаружено</h1>
+        </div>
+    {% endif %}
+{% endblock %}

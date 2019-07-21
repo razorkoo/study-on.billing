@@ -1,0 +1,7 @@
+{% extends 'email.html.twig' %}
+{% block body %}
+<p>Срок аренды следующих курсов подходит к концу:</p>
+    {% for transaction in transactionsEmail %}
+        <p>{{ transaction['coursename'] }} действует до {{ transaction['expires'] }}</p>
+    {% endfor %}
+{% endblock %}

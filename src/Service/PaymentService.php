@@ -44,6 +44,7 @@ class PaymentService
                 $newTransaction->setType(Transaction::TYPE_PAYMENT);
                 $newTransaction->setBUser($user);
                 $newTransaction->setCourse($course);
+
                 if ($course->getPrice()) {
                     $newTransaction->setValue($course->getPrice());
                     $user->setBalance($user->getBalance()-$course->getPrice());
@@ -53,6 +54,7 @@ class PaymentService
                 } else {
                     $newTransaction->setValue(0.0);
                 }
+                $newTransaction->setCreatedat(new \DateTime());
                 $this->manager->persist($newTransaction);
                 $this->manager->persist($user);
                 $this->manager->flush();

@@ -44,6 +44,11 @@ class Transaction
      */
     private $expiredat;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $createdat;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -112,6 +117,18 @@ class Transaction
         } else {
             $this->expiredat = $date;
         }
+        return $this;
+    }
+
+    public function getCreatedat(): ?\DateTimeInterface
+    {
+        return $this->createdat;
+    }
+
+    public function setCreatedat(?\DateTimeInterface $createdat): self
+    {
+        $this->createdat = $createdat;
+
         return $this;
     }
 }

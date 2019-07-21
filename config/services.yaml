@@ -47,3 +47,14 @@ services:
       public: true
       arguments:
         $entityManager: "@doctrine.orm.entity_manager"
+    App\Command\NotificationCommand:
+      public: true
+      arguments:
+          $sendFrom: "studyontest@bk.ru"
+          $entityManager: "@doctrine.orm.entity_manager"
+    App\Command\ReportCommand:
+      public: true
+      arguments:
+        $sendFrom: "studyontest@bk.ru"
+        $sendTo: "studyonadmin@bk.ru"
+        $entityManager: "@doctrine.orm.entity_manager"

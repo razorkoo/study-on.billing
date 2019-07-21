@@ -40,5 +40,31 @@ class TransactionRepository extends ServiceEntityRepository
         }
         return $queryBilder->getQuery()->getResult();
     }
+    public function findByDate(\DateTime $start, \DateTime $end, $type = null, $user = null, $report = null, $course = null)
+    {
+        $queryBilder = $this->createQueryBuilder('t');
+        if (isset($type)) {
+            $queryBilder->andWhere('t.type = :type')
+                ->setParameter('type', $type);
+        }
+        if (isset($user)) {
+            $queryBilder->andWhere('t.bUser = :user')
+                ->setParameter('user',$user);
+        }
+        if (!isset($report)) {
+            $queryBilder->andWhere('t.expiredat between :start and :end')
+                ->setParameter('start', $start)
+                ->setParameter('end', $end);
+        } else {
+            $queryBilder->andWhere('t.createdat between :start and :end')
+                ->setParameter('start', $start)
+                ->setParameter('end', $end);
+        }
+        if (isset($course)) {
+            $queryBilder->andWhere('t.course = :course')
+                ->setParameter('course',$course);
+        }
+        return $queryBilder->getQuery()->getResult();
+    }
 
 }
